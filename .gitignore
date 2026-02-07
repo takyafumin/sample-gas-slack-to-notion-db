@@ -9,3 +9,4 @@ yarn-error.log
 # Clasp / Google Apps Script
 .clasp.json
 .clasprc.json
+dist/

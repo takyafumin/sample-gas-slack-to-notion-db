@@ -18,49 +18,44 @@ Slackのメッセージに📝(memo)リアクションを付けると、自動�
 
 ## 開発環境セットアップ
 
-### 1. claspのインストール
-
-```bash
-npm install -g @google/clasp
-```
-
-### 2. Googleアカウントでログイン
-
-```bash
-clasp login
-```
-
-### 3. リポジトリをクローン
+### 1. プロジェクトのセットアップ
 
 ```bash
 git clone <repository-url>
 cd sample-gas-slack-to-notion-db
+npm install
 ```
 
+### 2. claspのセットアップ
 
+```bash
+npx clasp login
+```
 
-### 4. GASプロジェクトの作成（または既存プロジェクトの紐付け）
+### 3. GASプロジェクトの作成（または既存プロジェクトの紐付け）
 
 クローンした直後は `.clasp.json` がないため、以下のいずれかを行ってください。
 
 #### A: 新規プロジェクト作成
 ```bash
-clasp create --title "Slack to Notion DB" --type webapp
+npx clasp create --title "Slack to Notion DB" --type webapp
+# 作成後、rootDirを "./dist" に設定してください
 ```
 
 #### B: 既存プロジェクトを使用
 ```bash
-clasp clone <scriptId>
+npx clasp clone <scriptId>
+# クローン後、rootDirを "./dist" に設定してください
 ```
 ※ `scriptId` は GASエディタ > プロジェクトの設定 > スクリプトID から確認できます。
 
-### 5. 認証情報の設定（スクリプトプロパティ）
+### 4. 認証情報の設定（スクリプトプロパティ）
 
 認証情報はセキュリティのため、コードには含めずGASのスクリプトプロパティに設定します。
 
 #### 方法A: GASエディタから設定
 
-1. `clasp open-script` でGASエディタを開く
+1. `npm run open` でGASエディタを開く
 2. **プロジェクトの設定** (歯車アイコン) をクリック
 3. **スクリプト プロパティ** セクションで以下を追加：
 
@@ -111,57 +106,41 @@ function setupProperties() {
 
 ## デプロイ
 
-### ローカルからGASへプッシュ
+以下のコマンドで、TypeScriptのビルドとGASへのプッシュ、デプロイメントの作成を自動で行います。
+
+### 通常のデプロイ (Pushのみ)
 
 ```bash
-clasp push
+npm run deploy
 ```
+※このコマンドは `npm run build` (tsc compile) と `clasp push` を実行します。
 
-### Webアプリとしてデプロイ
+### Webアプリとして公開
 
 ```bash
-clasp deploy --description "バージョンの説明"
+npx clasp deploy --description "バージョンの説明"
 ```
 
 または、GASエディタから:
 
-1. `clasp open-script` でGASエディタを開く
+1. `npm run open` でGASエディタを開く
 2. **デプロイ** > **新しいデプロイ** を選択
 3. 種類は **ウェブアプリ** を選択
 4. 実行するユーザー: **自分**
 5. アクセスできるユーザー: **全員**
 6. デプロイ後のURLをSlack Event SubscriptionsのRequest URLに設定
 
-### 既存デプロイの更新
-
-**推奨: デプロイスクリプトを使用**
-
-```bash
-./deploy.sh
-```
-
-このスクリプトは自動的に `clasp push` → デプロイメントID取得 → `clasp deploy` を実行します。
-
-**手動で更新する場合**
-
-```bash
-clasp deploy --deploymentId <deployment-id>
-```
-
-デプロイIDは以下で確認:
-
-```bash
-clasp deployments
-```
-
 ## ファイル構成
 
 ```
 .
-├── .clasp.json       # clasp設定 (スクリプトID等)
-├── appsscript.json   # GASプロジェクト設定
-├── deploy.sh         # デプロイスクリプト
-├── main.js           # メインスクリプト
+├── .clasp.json       # clasp設定 (rootDir: ./dist)
+├── dist/             # ビルド成果物 (GASにプッシュされる)
+├── src/              # ソースコード
+│   ├── appsscript.json # GASプロジェクト設定
+│   └── main.ts       # メインスクリプト (TypeScript)
+├── package.json      # npm scripts, dependencies
+├── tsconfig.json     # TypeScript設定
 └── README.md         # このファイル
 ```
 
@@ -169,13 +148,11 @@ clasp deployments
 
 | コマンド | 説明 |
 |---------|------|
-| `clasp login` | Googleアカウントでログイン |
-| `clasp push` | ローカルの変更をGASにプッシュ |
-| `clasp pull` | GASからローカルに取得 |
-| `clasp open-script` | GASエディタをブラウザで開く |
-| `clasp deploy` | 新しいバージョンをデプロイ |
-| `clasp deployments` | デプロイ一覧を表示 |
-| `clasp logs` | 実行ログを表示 |
+| `npm run build` | TypeScriptをコンパイルし、appsscript.jsonをdistにコピー |
+| `npm run deploy` | ビルドしてGASにプッシュ |
+| `npm run lint` | Biomeでリント実行 |
+| `npm run format` | Biomeでフォーマット実行 |
+| `npx clasp open` | GASエディタをブラウザで開く |
 
 ## トラブルシューティング
 

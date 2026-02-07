@@ -7,7 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "biome lint .",
     "format": "biome format --write .",
-    "check": "biome check --write ."
+    "check": "biome check --write .",
+    "build": "tsc && cp src/appsscript.json dist/",
+    "deploy": "npm run build && clasp push",
+    "open": "clasp open"
   },
   "repository": {
     "type": "git",
